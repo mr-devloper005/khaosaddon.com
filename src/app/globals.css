@@ -71,9 +71,9 @@
 }
 
 @theme inline {
-  --font-sans: var(--font-manrope), 'Segoe UI', sans-serif;
+  --font-sans: var(--font-carter-one), cursive;
   --font-mono: ui-monospace, SFMono-Regular, Menlo, monospace;
-  --font-display: var(--font-fraunces), 'Times New Roman', serif;
+  --font-display: var(--font-carter-one), cursive;
   --color-background: var(--background);
   --color-foreground: var(--foreground);
   --color-card: var(--card);

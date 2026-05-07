@@ -252,12 +252,14 @@ export async function TaskDetailPage({ task, slug }: { task: TaskKey; slug: stri
       <NavbarShell />
       <main className="mx-auto max-w-7xl px-4 py-10 sm:px-6 lg:px-8">
         <SchemaJsonLd data={schemaPayload} />
-        <Link
-          href={taskConfig?.route || "/"}
-          className="mb-6 inline-flex items-center text-sm text-muted-foreground hover:text-foreground"
-        >
-          ← Back to {taskConfig?.label || "posts"}
-        </Link>
+        {!isArticle ? (
+          <Link
+            href={taskConfig?.route || "/"}
+            className="mb-6 inline-flex items-center text-sm text-muted-foreground hover:text-foreground"
+          >
+            ← Back to {taskConfig?.label || "posts"}
+          </Link>
+        ) : null}
 
         <div
           className={cn(
@@ -267,44 +269,133 @@ export async function TaskDetailPage({ task, slug }: { task: TaskKey; slug: stri
         >
           <div className={cn(isClassified ? "space-y-8" : "")}>
             {isArticle ? (
-              <div className="mx-auto w-full max-w-4xl space-y-6">
-                <h1 className="text-4xl font-semibold leading-tight text-foreground">
-                  {post.title}
-                </h1>
-                <div className="flex flex-wrap items-center gap-x-4 gap-y-2 text-sm text-muted-foreground">
-                  <span>By {articleAuthor}</span>
-                  {articleDate ? <span>{articleDate}</span> : null}
-                  <Badge variant="secondary" className="inline-flex items-center gap-1">
-                    <Tag className="h-3.5 w-3.5" />
-                    {category}
-                  </Badge>
+              <div className="mx-auto w-full max-w-7xl">
+                {/* Hero — editorial header */}
+                <div className="relative overflow-hidden rounded-[2rem] border border-[rgba(31,42,82,0.12)] bg-[linear-gradient(160deg,rgba(247,244,239,0.98)_0%,rgba(255,251,246,0.96)_40%,rgba(242,236,228,0.95)_100%)] p-8 shadow-[0_28px_80px_rgba(31,42,82,0.1)] sm:p-12 lg:p-16">
+                  <div className="absolute -right-12 -top-12 h-64 w-64 rounded-full bg-[rgba(219,39,119,0.08)] blur-3xl" />
+                  <div className="absolute -bottom-8 -left-8 h-48 w-48 rounded-full bg-[rgba(59,130,246,0.08)] blur-3xl" />
+                  <div className="relative">
+                    <div className="editorial-label mb-5">
+                      <Tag className="h-3.5 w-3.5" />
+                      {category}
+                    </div>
+                    <h1 className="max-w-4xl font-[family-name:var(--font-display)] text-4xl font-semibold leading-[1.12] tracking-[-0.032em] text-[#1f2a52] sm:text-5xl lg:text-6xl">
+                      {post.title}
+                    </h1>
+                    <div className="mt-8 flex items-center gap-2.5 text-sm text-[#4f5b85]">
+                      <div className="flex items-center gap-2.5">
+                        <div className="flex h-9 w-9 items-center justify-center rounded-full bg-[rgba(219,39,119,0.1)] text-sm font-semibold text-[#831848]">
+                          {articleAuthor.charAt(0).toUpperCase()}
+                        </div>
+                        <div>
+                          <p className="font-semibold text-[#1f2a52]">{articleAuthor}</p>
+                          <p className="text-xs">Author</p>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
                 </div>
-                {postTags.length ? (
-                  <div className="flex flex-wrap gap-2">
-                    {postTags.map((tag) => (
-                      <Badge key={tag} variant="outline">
-                        {tag}
-                      </Badge>
-                    ))}
-                  </div>
-                ) : null}
-                {articleSummary ? (
-                  <p className="text-base leading-7 text-muted-foreground">{articleSummary}</p>
-                ) : null}
+
+                {/* Featured image — editorial frame */}
                 {images[0] ? (
-                  <div className="relative aspect-[16/9] w-full overflow-hidden rounded-3xl border border-border bg-muted">
-                    <ContentImage
-                      src={images[0]}
-                      alt={`${post.title} featured image`}
-                      fill
-                      className="object-cover"
-                      intrinsicWidth={1600}
-                      intrinsicHeight={900}
-                    />
+                  <div className="relative mx-auto mt-10 max-w-5xl">
+                    <div className="absolute -inset-3 rounded-[2.4rem] bg-[rgba(219,39,119,0.06)]" />
+                    <div className="paper-panel relative overflow-hidden rounded-[2rem]">
+                      <div className="relative aspect-[16/9] w-full">
+                        <ContentImage
+                          src={images[0]}
+                          alt={`${post.title} featured image`}
+                          fill
+                          className="object-cover"
+                          intrinsicWidth={1600}
+                          intrinsicHeight={900}
+                        />
+                      </div>
+                    </div>
                   </div>
                 ) : null}
-                <RichContent html={articleHtml} className="leading-8 prose-p:my-6 prose-h2:my-8 prose-h3:my-6 prose-ul:my-6" />
-                <ArticleComments slug={post.slug} />
+
+                {/* Content grid — article + sidebar */}
+                <div className="mt-12 grid gap-10 lg:grid-cols-[1fr_320px] lg:items-start">
+                  {/* Main content */}
+                  <div className="paper-panel rounded-[2rem] p-7 sm:p-10 lg:p-12">
+                    <div className="prose-h2:editorial-divider relative mx-auto max-w-2xl">
+                      <RichContent
+                        html={articleHtml}
+                        className="article-content leading-8 text-[#2a365e] prose-p:my-6 prose-h2:my-8 prose-h3:my-6 prose-ul:my-6"
+                      />
+                    </div>
+                    <div className="mx-auto mt-12 max-w-2xl border-t border-[rgba(31,42,82,0.1)] pt-8">
+                      <ArticleComments slug={post.slug} />
+                    </div>
+                  </div>
+
+                  {/* Sticky sidebar */}
+                  <aside className="space-y-6 lg:sticky lg:top-8">
+                    {/* Tags */}
+                    {postTags.length ? (
+                      <div className="paper-panel rounded-[1.6rem] p-6">
+                        <p className="text-[11px] font-semibold uppercase tracking-[0.24em] text-[#4f5b85]">Topics</p>
+                        <div className="mt-4 flex flex-wrap gap-2">
+                          {postTags.map((tag) => (
+                            <span
+                              key={tag}
+                              className="inline-flex items-center rounded-full border border-[rgba(31,42,82,0.12)] bg-[rgba(31,42,82,0.04)] px-3 py-1.5 text-xs font-medium text-[#1f2a52] transition hover:border-[rgba(219,39,119,0.3)] hover:bg-[rgba(219,39,119,0.06)]"
+                            >
+                              {tag}
+                            </span>
+                          ))}
+                        </div>
+                      </div>
+                    ) : null}
+
+                    {/* Author card */}
+                    <div className="paper-panel rounded-[1.6rem] p-6">
+                      <p className="text-[11px] font-semibold uppercase tracking-[0.24em] text-[#4f5b85]">Written by</p>
+                      <div className="mt-4 flex items-center gap-3">
+                        <div className="flex h-12 w-12 items-center justify-center rounded-full bg-[rgba(219,39,119,0.1)] text-lg font-bold text-[#831848]">
+                          {articleAuthor.charAt(0).toUpperCase()}
+                        </div>
+                        <div>
+                          <p className="font-semibold text-[#1f2a52]">{articleAuthor}</p>
+                          <p className="text-xs text-[#4f5b85]">Editorial Team</p>
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* Share */}
+                    <div className="paper-panel rounded-[1.6rem] p-6">
+                      <p className="text-[11px] font-semibold uppercase tracking-[0.24em] text-[#4f5b85]">Share</p>
+                      <div className="mt-4 flex flex-wrap gap-2">
+                        <a
+                          href={`https://twitter.com/intent/tweet?text=${encodeURIComponent(post.title)}&url=${encodeURIComponent(articleUrl)}`}
+                          target="_blank"
+                          rel="noreferrer"
+                          className="inline-flex items-center gap-1.5 rounded-full bg-[#1f2a52] px-4 py-2 text-xs font-semibold text-white transition hover:bg-[#2a365e]"
+                        >
+                          X / Twitter
+                        </a>
+                        <a
+                          href={`https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(articleUrl)}`}
+                          target="_blank"
+                          rel="noreferrer"
+                          className="inline-flex items-center gap-1.5 rounded-full border border-[rgba(31,42,82,0.15)] bg-white px-4 py-2 text-xs font-semibold text-[#1f2a52] transition hover:bg-[rgba(31,42,82,0.04)]"
+                        >
+                          LinkedIn
+                        </a>
+                      </div>
+                    </div>
+
+                    {/* Back link */}
+                    <Link
+                      href={taskConfig?.route || "/"}
+                      className="flex items-center gap-2 text-sm font-medium text-[#4f5b85] transition hover:text-[#1f2a52]"
+                    >
+                      <span className="inline-flex h-8 w-8 items-center justify-center rounded-full border border-[rgba(31,42,82,0.12)] bg-white text-xs transition hover:border-[rgba(219,39,119,0.3)] hover:bg-[rgba(219,39,119,0.06)]">←</span>
+                      Back to {taskConfig?.label || "posts"}
+                    </Link>
+                  </aside>
+                </div>
               </div>
             ) : null}
 
@@ -502,39 +593,6 @@ export async function TaskDetailPage({ task, slug }: { task: TaskKey; slug: stri
             </div>
             </>
           ) : null}
-          <nav className="mt-6 rounded-2xl border border-border bg-card/60 p-4">
-            <p className="text-sm font-semibold text-foreground">Related links</p>
-            <ul className="mt-2 space-y-2 text-sm">
-              {related.map((item) => (
-                <li key={`link-${item.id}`}>
-                  <Link
-                    href={buildPostUrl(task, item.slug)}
-                    className="text-primary underline-offset-4 hover:underline"
-                  >
-                    {item.title}
-                  </Link>
-                </li>
-              ))}
-              {taskConfig?.route ? (
-                <li>
-                  <Link
-                    href={taskConfig.route}
-                    className="text-primary underline-offset-4 hover:underline"
-                  >
-                    Browse all {taskConfig.label}
-                  </Link>
-                </li>
-              ) : null}
-              <li>
-                <Link
-                  href={`/search?q=${encodeURIComponent(category)}`}
-                  className="text-primary underline-offset-4 hover:underline"
-                >
-                  Search more in {category}
-                </Link>
-              </li>
-            </ul>
-          </nav>
         </section>
       </main>
       <Footer />
