@@ -1,56 +1,63 @@
-import { Mail, MessageSquareText, ShieldCheck } from 'lucide-react';
+import Link from "next/link";
+import { Mail, Phone, Sparkles } from "lucide-react";
+import { PageShell } from "@/components/shared/page-shell";
+import { Card, CardContent } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { SITE_CONFIG } from "@/lib/site-config";
+import { ContactLeadForm } from "@/components/shared/contact-lead-form";
 
-import { ContactLeadForm } from '@/components/shared/contact-lead-form';
-import { Footer } from '@/components/shared/footer';
-import { NavbarShell } from '@/components/shared/navbar-shell';
-
-const siteName = process.env.NEXT_PUBLIC_SITE_NAME || 'Khaos Addon';
-
-const contactHighlights = [
-  { icon: Mail, title: 'Direct response', copy: 'Your message is saved securely and routed to the right team.' },
-  { icon: MessageSquareText, title: 'Clear details', copy: 'Share your requirement, question, or collaboration idea in one place.' },
-  { icon: ShieldCheck, title: 'Reliable follow-up', copy: 'We keep the request record so every conversation stays traceable.' },
+const lanes = [
+  {
+    icon: Mail,
+    title: "Editorial support",
+    body: "Questions about articles, corrections, publication flow, or submission guidance.",
+  },
+  {
+    icon: Sparkles,
+    title: "Partnerships",
+    body: "Collaborations, sponsorships, and branded article campaign requests.",
+  },
+  {
+    icon: Phone,
+    title: "General help",
+    body: "Account, publishing, and platform questions that need a direct response.",
+  },
 ];
 
 export default function ContactPage() {
   return (
-    <div className="min-h-screen bg-[#f7f1e8] text-stone-950">
-      <NavbarShell />
-      <main>
-        <section className="relative overflow-hidden px-6 py-20 md:px-10 lg:px-16">
-          <div className="absolute left-[-10%] top-10 h-72 w-72 rounded-full bg-amber-200/40 blur-3xl" />
-          <div className="absolute bottom-0 right-[-8%] h-80 w-80 rounded-full bg-stone-300/50 blur-3xl" />
+    <PageShell
+      title="Contact Us"
+      description={`Reach the ${SITE_CONFIG.name} editorial team and support desk.`}
+      actions={
+        <Button variant="outline" asChild>
+          <Link href="/articles">Browse Articles</Link>
+        </Button>
+      }
+    >
+      <div className="grid gap-6 lg:grid-cols-[1fr_1fr]">
+        <div className="space-y-4">
+          {lanes.map((lane) => (
+            <Card key={lane.title} className="border-[#d2daf0] bg-white">
+              <CardContent className="p-6">
+                <lane.icon className="h-5 w-5 text-[#1f2a52]" />
+                <h2 className="mt-3 text-xl font-semibold text-[#1f2a52]">{lane.title}</h2>
+                <p className="mt-2 text-sm leading-7 text-[#4f5b85]">{lane.body}</p>
+              </CardContent>
+            </Card>
+          ))}
+        </div>
 
-          <div className="relative mx-auto grid max-w-6xl gap-10 lg:grid-cols-[0.9fr_1.1fr] lg:items-start">
-            <div>
-              <p className="text-sm font-black uppercase tracking-[0.35em] text-stone-500">Contact</p>
-              <h1 className="mt-5 max-w-3xl text-5xl font-black leading-[0.95] tracking-[-0.06em] text-stone-950 md:text-7xl">
-                Let&apos;s talk about your next move.
-              </h1>
-              <p className="mt-6 max-w-2xl text-lg leading-8 text-stone-700">
-                Use this form to reach {siteName}. Your request will be recorded and shared with the support team for follow-up.
-              </p>
-
-              <div className="mt-8 grid gap-4">
-                {contactHighlights.map((item) => (
-                  <div key={item.title} className="flex gap-4 rounded-3xl border border-stone-200 bg-white/60 p-5 shadow-sm">
-                    <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-stone-950 text-white">
-                      <item.icon className="h-5 w-5" />
-                    </div>
-                    <div>
-                      <h2 className="text-base font-black text-stone-950">{item.title}</h2>
-                      <p className="mt-1 text-sm leading-6 text-stone-600">{item.copy}</p>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </div>
-
+        <Card className="border-[#d2daf0] bg-white">
+          <CardContent className="p-6">
+            <h2 className="text-2xl font-semibold text-[#1f2a52]">Send a message</h2>
+            <p className="mt-2 text-sm text-[#4f5b85]">
+              Share your request and we will route it to the right team.
+            </p>
             <ContactLeadForm />
-          </div>
-        </section>
-      </main>
-      <Footer />
-    </div>
+          </CardContent>
+        </Card>
+      </div>
+    </PageShell>
   );
 }
