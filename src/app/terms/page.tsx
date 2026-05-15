@@ -80,7 +80,6 @@ export default function TermsPage() {
         </Link>
       }
     >
-      <p className="text-sm text-zinc-500">Last updated: April 13, 2026</p>
       <div className="mt-8 space-y-5">
         {sections.map((section) => (
           <section

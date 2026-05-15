@@ -55,7 +55,6 @@ export default function CookiesPage() {
           adjust non-essential categories from the consent banner or browser settings; essential cookies cannot be
           disabled without breaking core functionality.
         </p>
-        <p className="text-xs text-zinc-500">Last updated: April 13, 2026</p>
       </div>
 
       <div className="mt-10 overflow-x-auto border border-white/10">

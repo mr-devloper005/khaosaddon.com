@@ -4,12 +4,11 @@ import { useMemo, useState } from 'react'
 import dynamic from 'next/dynamic'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
-import { Search, Menu, X, User, FileText, Building2, LayoutGrid, Tag, Image as ImageIcon, Sparkles, Plus } from 'lucide-react'
+import { Search, Menu, X, User, FileText, Building2, LayoutGrid, Tag, Image as ImageIcon, Plus } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { useAuth } from '@/lib/auth-context'
 import { SITE_CONFIG, type TaskKey } from '@/lib/site-config'
 import { cn } from '@/lib/utils'
-import { siteContent } from '@/config/site.content'
 import { getFactoryState } from '@/design/factory/get-factory-state'
 import { NAVBAR_OVERRIDE_ENABLED, NavbarOverride } from '@/overrides/navbar'
 
@@ -38,6 +37,7 @@ const variantClasses = {
     active: 'bg-[#1f2a52] text-white',
     idle: 'text-[#4b5888] hover:bg-[#eef2fb] hover:text-[#1f2a52]',
     cta: 'rounded-full bg-[#cd1f6f] text-white hover:bg-[#aa175c]',
+    search: 'border border-[#d7deef] bg-white text-[#4b5888]',
     mobile: 'border-t border-[#d7deef] bg-[#f8f9fe]',
   },
   'editorial-bar': {
@@ -46,6 +46,7 @@ const variantClasses = {
     active: 'bg-[#2f1d16] text-[#fff4e4]',
     idle: 'text-[#72594a] hover:bg-[#f2e5d4] hover:text-[#2f1d16]',
     cta: 'rounded-full bg-[#2f1d16] text-[#fff4e4] hover:bg-[#452920]',
+    search: 'border border-[#dbc6b6] bg-white text-[#72594a]',
     mobile: 'border-t border-[#dbc6b6] bg-[#fff7ee]',
   },
   'floating-bar': {
@@ -54,6 +55,7 @@ const variantClasses = {
     active: 'bg-[#8df0c8] text-[#07111f]',
     idle: 'text-slate-200 hover:bg-white/10 hover:text-white',
     cta: 'rounded-full bg-[#8df0c8] text-[#07111f] hover:bg-[#77dfb8]',
+    search: 'border border-white/20 bg-white/10 text-slate-200',
     mobile: 'border-t border-white/10 bg-[#09101d]/96',
   },
   'utility-bar': {
@@ -62,6 +64,7 @@ const variantClasses = {
     active: 'bg-[#1f2617] text-[#edf5dc]',
     idle: 'text-[#56604b] hover:bg-[#e7edd9] hover:text-[#1f2617]',
     cta: 'rounded-lg bg-[#1f2617] text-[#edf5dc] hover:bg-[#2f3a24]',
+    search: 'border border-[#d7deca] bg-white text-[#56604b]',
     mobile: 'border-t border-[#d7deca] bg-[#f4f6ef]',
   },
 } as const
@@ -97,10 +100,10 @@ export function Navbar() {
   const { isAuthenticated } = useAuth()
   const { recipe } = getFactoryState()
 
-  const navigation = useMemo(() => {
-    const articleOnly = SITE_CONFIG.tasks.filter((task) => task.enabled && task.key === 'article')
-    return articleOnly.length ? articleOnly : SITE_CONFIG.tasks.filter((task) => task.enabled && task.key !== 'profile')
-  }, [])
+  const navigation = useMemo(
+    () => SITE_CONFIG.tasks.filter((task) => task.enabled && task.key !== 'profile' && task.key !== 'article'),
+    []
+  )
   const primaryNavigation = navigation.slice(0, 6)
   const mobileNavigation = navigation.map((task) => ({
     name: task.label,
@@ -108,10 +111,6 @@ export function Navbar() {
     icon: taskIcons[task.key] || LayoutGrid,
   }))
 
-  const primaryTask =
-    SITE_CONFIG.tasks.find((task) => task.enabled && task.key === 'article') ||
-    SITE_CONFIG.tasks.find((task) => task.key === recipe.primaryTask && task.enabled) ||
-    primaryNavigation[0]
   const isDirectoryProduct = recipe.homeLayout === 'listing-home' || recipe.homeLayout === 'classified-home'
   const createHref = isAuthenticated ? '/create/article' : '/login?next=/create/article'
 
@@ -128,10 +127,7 @@ export function Navbar() {
               <div className={cn('flex h-12 w-12 shrink-0 items-center justify-center overflow-hidden p-1.5', style.logo)}>
                 <img src="/favicon.png?v=20260413" alt={`${SITE_CONFIG.name} logo`} width="48" height="48" className="h-full w-full object-contain" />
               </div>
-              <div className="min-w-0">
-                <span className="block truncate text-lg font-semibold">{SITE_CONFIG.name}</span>
-                <span className="block truncate text-[10px] uppercase tracking-[0.22em] opacity-75">{siteContent.navbar.tagline}</span>
-              </div>
+              <span className="block min-w-0 truncate text-lg font-semibold">{SITE_CONFIG.name}</span>
             </Link>
           </div>
 
@@ -165,7 +161,7 @@ export function Navbar() {
         </div>
 
         <div className="hidden pb-4 lg:block">
-          <div className="grid gap-3 xl:grid-cols-[1.2fr_0.8fr]">
+          <div className="grid gap-3">
             <nav className="flex flex-wrap items-center gap-2 rounded-2xl border border-current/15 bg-white/10 p-2 backdrop-blur-md">
               {primaryNavigation.map((task) => {
                 const isActive = pathname.startsWith(task.route)
@@ -184,11 +180,6 @@ export function Navbar() {
               <Link href="/about" className={cn('inline-flex items-center gap-2 rounded-xl px-3 py-2 text-sm font-semibold transition-colors', pathname === '/about' ? style.active : style.idle)}>
                 About
               </Link>
-              {!primaryNavigation.some((item) => item.route === '/articles') ? (
-                <Link href="/articles" className={cn('inline-flex items-center gap-2 rounded-xl px-3 py-2 text-sm font-semibold transition-colors', pathname.startsWith('/articles') ? style.active : style.idle)}>
-                  Articles
-                </Link>
-              ) : null}
               <Link href="/contact" className={cn('inline-flex items-center gap-2 rounded-xl px-3 py-2 text-sm font-semibold transition-colors', pathname === '/contact' ? style.active : style.idle)}>
                 Contact
               </Link>
@@ -197,20 +188,6 @@ export function Navbar() {
                 Create
               </Link>
             </nav>
-
-            <div className="rounded-2xl border border-current/15 bg-white/10 px-4 py-3 backdrop-blur-md">
-              <p className="text-[10px] font-semibold uppercase tracking-[0.22em] opacity-75">Featured lane</p>
-              <div className="mt-1 flex items-center justify-between gap-3">
-                <div>
-                  <p className="text-base font-semibold">{primaryTask?.label || 'Explore'}</p>
-                  <p className="text-xs opacity-80">{primaryTask?.description || 'Browse long-form articles and editorials.'}</p>
-                </div>
-                <Link href={primaryTask?.route || '/'} className="inline-flex items-center gap-1 rounded-full border border-current/25 px-3 py-1.5 text-xs font-semibold">
-                  <Sparkles className="h-3.5 w-3.5" />
-                  Open
-                </Link>
-              </div>
-            </div>
           </div>
         </div>
       </div>
@@ -228,7 +205,7 @@ export function Navbar() {
             <Button size="sm" asChild className={cn('w-full rounded-full', style.cta)}>
               <Link href={createHref}>
                 <Plus className="mr-1 h-4 w-4" />
-                Create Article
+                Create
               </Link>
             </Button>
             {mobileNavigation.map((item) => {
