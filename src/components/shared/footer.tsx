@@ -1,7 +1,6 @@
 import Link from 'next/link'
 import { FileText, Building2, LayoutGrid, Tag, Github, Twitter, Linkedin, Image as ImageIcon, User, ArrowRight, Sparkles } from 'lucide-react'
 import { SITE_CONFIG, type TaskKey } from '@/lib/site-config'
-import { siteContent } from '@/config/site.content'
 import { getFactoryState } from '@/design/factory/get-factory-state'
 import { FOOTER_OVERRIDE_ENABLED, FooterOverride } from '@/overrides/footer'
 
@@ -27,17 +26,12 @@ const footerLinks = {
   company: [
     { name: 'About', href: '/about' },
     { name: 'Careers', href: '/careers' },
-    { name: 'Press', href: '/press' },
   ],
-  resources: [
-    { name: 'Help Center', href: '/help' },
-    { name: 'Status', href: '/status' },
-  ],
+  resources: [],
   legal: [
     { name: 'Privacy', href: '/privacy' },
     { name: 'Terms', href: '/terms' },
     { name: 'Cookies', href: '/cookies' },
-    { name: 'Licenses', href: '/licenses' },
   ],
 }
 
@@ -93,7 +87,6 @@ export function Footer() {
                 </div>
                 <div>
                   <p className="text-lg font-semibold">{SITE_CONFIG.name}</p>
-                  <p className="text-xs uppercase tracking-[0.24em] text-slate-400">{siteContent.footer.tagline}</p>
                 </div>
               </div>
               <p className="mt-5 max-w-md text-sm leading-7 text-slate-300">{publicationSummary}</p>
@@ -113,14 +106,16 @@ export function Footer() {
                   ))}
                 </ul>
               </div>
-              <div>
-                <h3 className="text-xs font-semibold uppercase tracking-[0.24em] text-slate-400">Resources</h3>
-                <ul className="mt-4 space-y-3 text-sm text-slate-200">
-                  {footerLinks.resources.map((item) => (
-                    <li key={item.name}><Link href={item.href} className="hover:text-white">{item.name}</Link></li>
-                  ))}
-                </ul>
-              </div>
+              {footerLinks.resources.length ? (
+                <div>
+                  <h3 className="text-xs font-semibold uppercase tracking-[0.24em] text-slate-400">Resources</h3>
+                  <ul className="mt-4 space-y-3 text-sm text-slate-200">
+                    {footerLinks.resources.map((item) => (
+                      <li key={item.name}><Link href={item.href} className="hover:text-white">{item.name}</Link></li>
+                    ))}
+                  </ul>
+                </div>
+              ) : null}
               <div>
                 <h3 className="text-xs font-semibold uppercase tracking-[0.24em] text-slate-400">Connect</h3>
                 <div className="mt-4 flex gap-3">
@@ -185,7 +180,6 @@ export function Footer() {
               </div>
               <div>
                 <span className="block text-lg font-semibold">{SITE_CONFIG.name}</span>
-                <span className="text-xs uppercase tracking-[0.22em] text-[#c7d6ff]">{siteContent.footer.tagline}</span>
               </div>
             </Link>
             <p className="mt-5 max-w-sm text-sm leading-7 text-[#d6e0ff]">{publicationSummary}</p>
@@ -193,16 +187,18 @@ export function Footer() {
               Contact Us
             </Link>
           </div>
-          {(['platform', 'company', 'resources', 'legal'] as const).map((section) => (
-            <div key={section}>
-              <h3 className="text-sm font-semibold uppercase tracking-[0.22em] text-[#c7d6ff]">{section}</h3>
-              <ul className="mt-5 space-y-3 text-sm text-[#d6e0ff]">
-                {footerLinks[section].map((item: any) => (
-                  <li key={item.name}><Link href={item.href} className="flex items-center gap-2 hover:text-[#ff6cad]">{item.icon ? <item.icon className="h-4 w-4" /> : null}{item.name}</Link></li>
-                ))}
-              </ul>
-            </div>
-          ))}
+          {(['platform', 'company', 'resources', 'legal'] as const).map((section) =>
+            footerLinks[section].length ? (
+              <div key={section}>
+                <h3 className="text-sm font-semibold uppercase tracking-[0.22em] text-[#c7d6ff]">{section}</h3>
+                <ul className="mt-5 space-y-3 text-sm text-[#d6e0ff]">
+                  {footerLinks[section].map((item: any) => (
+                    <li key={item.name}><Link href={item.href} className="flex items-center gap-2 hover:text-[#ff6cad]">{item.icon ? <item.icon className="h-4 w-4" /> : null}{item.name}</Link></li>
+                  ))}
+                </ul>
+              </div>
+            ) : null
+          )}
         </div>
         <div className="mt-12 border-t border-white/20 pt-6 text-center text-sm text-[#c7d6ff]">&copy; {new Date().getFullYear()} {SITE_CONFIG.name}. All rights reserved.</div>
       </div>

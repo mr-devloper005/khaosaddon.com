@@ -80,7 +80,6 @@ export default function PrivacyPage() {
         </Link>
       }
     >
-      <p className="text-sm text-zinc-500">Last updated: April 13, 2026</p>
       <div className="mt-8 grid gap-6 lg:grid-cols-[220px_1fr] lg:items-start">
         <nav className="hidden border border-white/10 bg-white/[0.03] p-4 text-sm text-zinc-400 lg:block">
           <p className="text-[11px] font-semibold uppercase tracking-[0.24em] text-zinc-500">On this page</p>
